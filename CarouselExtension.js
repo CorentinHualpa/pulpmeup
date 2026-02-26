@@ -570,44 +570,101 @@ export const CarouselExtension = {
   }
 }
 /* ═══════════════════════════════════════════════════════════ */
-/* DESCRIPTION                                                 */
+/* ✅ v5.0 : DESCRIPTION STRUCTURÉE (split par •)             */
 /* ═══════════════════════════════════════════════════════════ */
 .vf-carousel-description {
-  font-size: 13px;
-  color: #555 !important;
-  line-height: 1.55;
   margin: 0;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
-/* ✅ v5.0: plus de lignes visibles vu qu'on n'a plus l'image */
-.vf-carousel-container[data-display-mode="showcase"] .vf-carousel-description {
-  -webkit-line-clamp: 6;
+.vf-carousel-desc-line {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12.5px;
+  color: #444;
+  line-height: 1.4;
+}
+.vf-carousel-desc-line:first-child {
+  font-weight: 700;
+  color: var(--color-1);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.vf-carousel-desc-line:nth-child(2) {
+  font-weight: 700;
+  color: #1a1a1a;
+  font-size: 13px;
+}
+.vf-carousel-desc-dot {
+  width: 5px;
+  height: 5px;
+  min-width: 5px;
+  border-radius: 50%;
+  background: var(--color-1);
+  opacity: 0.4;
+  margin-top: 2px;
+}
+.vf-carousel-desc-line:first-child .vf-carousel-desc-dot,
+.vf-carousel-desc-line:nth-child(2) .vf-carousel-desc-dot {
+  display: none;
+}
+.vf-carousel-desc-freemium {
+  display: inline-block;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white !important;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+/* Showcase */
+.vf-carousel-container[data-display-mode="showcase"] .vf-carousel-desc-line {
   font-size: 14px;
 }
-.vf-carousel-container[data-display-mode="gallery"][data-cards-per-view="2"] .vf-carousel-description {
-  -webkit-line-clamp: 5;
-  font-size: 13px;
-}
-.vf-carousel-container[data-display-mode="gallery"][data-cards-per-view="3"] .vf-carousel-description {
-  -webkit-line-clamp: 4;
+.vf-carousel-container[data-display-mode="showcase"] .vf-carousel-desc-line:first-child {
   font-size: 12px;
 }
-.vf-carousel-container[data-display-mode="gallery"][data-cards-per-view="4"] .vf-carousel-description {
-  -webkit-line-clamp: 3;
-  font-size: 11px;
-  line-height: 1.45;
+/* Gallery 2 */
+.vf-carousel-container[data-display-mode="gallery"][data-cards-per-view="2"] .vf-carousel-desc-line {
+  font-size: 12.5px;
 }
-.vf-carousel-container[data-in-widget="true"] .vf-carousel-description {
-  -webkit-line-clamp: 5 !important;
+/* Gallery 3 */
+.vf-carousel-container[data-display-mode="gallery"][data-cards-per-view="3"] .vf-carousel-desc-line {
+  font-size: 11.5px;
+}
+.vf-carousel-container[data-display-mode="gallery"][data-cards-per-view="3"] .vf-carousel-desc-line:first-child {
+  font-size: 10px;
+}
+/* Gallery 4 */
+.vf-carousel-container[data-display-mode="gallery"][data-cards-per-view="4"] .vf-carousel-desc-line {
+  font-size: 11px;
+  gap: 4px;
+}
+.vf-carousel-container[data-display-mode="gallery"][data-cards-per-view="4"] .vf-carousel-desc-line:first-child {
+  font-size: 9.5px;
+}
+.vf-carousel-container[data-display-mode="gallery"][data-cards-per-view="4"] .vf-carousel-desc-dot {
+  width: 4px;
+  height: 4px;
+  min-width: 4px;
+}
+.vf-carousel-container[data-display-mode="gallery"][data-cards-per-view="4"] .vf-carousel-description {
+  gap: 3px;
+}
+/* Widget */
+.vf-carousel-container[data-in-widget="true"] .vf-carousel-desc-line {
   font-size: 13px !important;
 }
 @media (max-width: 768px) {
-  .vf-carousel-description {
+  .vf-carousel-desc-line {
     font-size: 13px;
-    -webkit-line-clamp: 4;
   }
 }
 /* ═══════════════════════════════════════════════════════════ */
@@ -1086,10 +1143,38 @@ export const CarouselExtension = {
         content.className = 'vf-carousel-content';
 
         if (item.description) {
-          const description = document.createElement('p');
-          description.className = 'vf-carousel-description';
-          description.textContent = truncateText(item.description, maxDescriptionLength);
-          content.appendChild(description);
+          const descContainer = document.createElement('div');
+          descContainer.className = 'vf-carousel-description';
+
+          // ✅ v5.0 : Split par "•" et rendu structuré
+          const segments = item.description.split('•').map(s => s.trim()).filter(Boolean);
+
+          segments.forEach((segment, segIndex) => {
+            // Détecte le tag Freemium
+            if (segment.includes('✅') || segment.toLowerCase().includes('freemium')) {
+              const badge = document.createElement('span');
+              badge.className = 'vf-carousel-desc-freemium';
+              badge.textContent = '✅ Freemium';
+              descContainer.appendChild(badge);
+              return;
+            }
+
+            const line = document.createElement('div');
+            line.className = 'vf-carousel-desc-line';
+
+            // Dot (masqué en CSS pour les 2 premières lignes)
+            const dot = document.createElement('span');
+            dot.className = 'vf-carousel-desc-dot';
+            line.appendChild(dot);
+
+            const text = document.createElement('span');
+            text.textContent = segment;
+            line.appendChild(text);
+
+            descContainer.appendChild(line);
+          });
+
+          content.appendChild(descContainer);
         }
 
         // ✅ v5.0 : Container 2 boutons
