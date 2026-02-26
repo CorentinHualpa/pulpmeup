@@ -431,9 +431,15 @@ export const CarouselExtension = {
   transition: var(--transition-bounce);
   position: relative;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   box-shadow:
     0 4px 16px rgba(0, 0, 0, 0.08),
     0 2px 6px rgba(0, 0, 0, 0.04);
+}
+/* ✅ Force equal height across all cards in a row */
+.vf-carousel-track {
+  align-items: stretch;
 }
 @media (max-width: 768px) {
   .vf-carousel-card {
@@ -550,6 +556,7 @@ export const CarouselExtension = {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex: 1;
 }
 .vf-carousel-container[data-display-mode="gallery"][data-cards-per-view="3"] .vf-carousel-content {
   padding: 10px 14px 14px 14px;
@@ -578,6 +585,7 @@ export const CarouselExtension = {
   flex-direction: column;
   gap: 4px;
   overflow: hidden;
+  flex: 1;
 }
 .vf-carousel-desc-line {
   display: flex;
